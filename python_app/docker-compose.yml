@@ -1,0 +1,16 @@
+version: '2'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: python-app
+    environment:
+      - ENABLE_INIT_DAEMON=false
+    external_links:
+      - "spark-master:spark-master"
+    networks:
+      - "spark_default"
+networks:
+  spark_default:
+    external: true
