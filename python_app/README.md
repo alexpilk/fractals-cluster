@@ -1,4 +1,4 @@
 ## Running the application
-`docker-compose run app /bin/bash`
-`./template.sh`
-`cat home/results/part-00000`
+1. `docker-compose run app /bin/bash`
+2. `./template.sh`
+3. `cat home/results/part-00000`
