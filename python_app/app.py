@@ -1,53 +1,49 @@
-import os
-
+#
+# Mandelbrotfractal--on Spark
+#
+import sys
+import time
+import numpy as np
+import matplotlib.pyplot as plt
 from pyspark import SparkContext
 
 
-text = """
-Lorem ipsum dolor sit amet, 
-consectetur adipiscing elit. 
-Aenean sit amet maximus neque, 
-vitae semper erat. Sed quis mi bibendum, 
-ultricies sem et, congue ligula. 
-Curabitur malesuada dolor quis nulla volutpat tincidunt. 
-Pellentesque et iaculis odio. 
-Vestibulum nec dolor et leo maximus blandit. 
-Mauris ultrices semper felis, 
-id ullamcorper mauris porttitor eget. 
-Etiam tristique orci nec dolor semper aliquet. 
-Nunc aliquam vestibulum turpis, 
-quis pharetra dui fermentum quis. 
-In nulla lectus, ornare sed ante in, 
-consequat rhoncus nisl. 
-Sed blandit erat eget felis cursus sollicitudin at at odio. 
-Orci varius natoque penatibus et magnis dis parturient montes, 
-nascetur ridiculus mus. Morbi leo neque, vestibulum a pharetra non, 
-fermentum eget elit. Donec sollicitudin justo augue, 
-vitae tincidunt enim viverra vitae. Nulla a libero venenatis, 
-consectetur nunc a, rhoncus quam.
-
-Nulla orci est, imperdiet eget congue in, 
-feugiat vitae quam. Duis sollicitudin tortor ac nulla porta dignissim. 
-In ac scelerisque sem. Nunc gravida ipsum nisi, 
-a ornare sapien aliquam eget. Cras gravida leo libero,
-ac aliquam ex pharetra nec. 
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; 
-Vivamus ut velit eget nisl maximus finibus sit amet at urna. 
-Aliquam erat volutpat. Pellentesque lorem magna, tempus vitae iaculis. 
-"""
-
+# c --griddla ktoregopoliczymy fraktal
+def mandelbrot_calculate( c ):
+    maxit= 100
+    z = c
+    divtime= maxit+ np.zeros(z.shape, dtype=int)
+    
+    for i in range(maxit):
+        z = z**2 + c
+        diverge= z*np.conj(z) > 2**2         # who is diverging
+        div_now= diverge & (divtime==maxit)  # who is diverging now
+        divtime[div_now] = i                 # note when
+        z[diverge] = 2                       # avoi ddiverg. too much 
+    
+    return divtime
 
 if __name__ == "__main__":
-    context = SparkContext("local", "first app")
+    sc = SparkContext(appName="Mandel-spark")  
 
-    path = os.path.join(os.getcwd(), "dataset.txt")
+    h = 2000  
+    w = 2000  
+    y,x= np.ogrid[ -1.4:1.4:h*1j, -2:0.8:w*1j ]
+    grid= x+y*1j   # gridh x w punktow
 
-    with open(path, 'w') as f:
-        f.write(text)
+    t0 = time.time()
 
-    # read in text file and split each document into words
-    words = context.textFile(path).flatMap(lambda line: line.split(" "))
+    grid_rdd= sc.parallelize(grid,2)                #RDD z 2 partycjami 
+    grid_rdd2 = grid_rdd.map(mandelbrot_calculate)    
+    fractal= grid_rdd2.collect()                    #collect() --zbieramy wyniki do drivera
 
-    # count the occurrence of each word
-    word_count = words.map(lambda word: (word, 1)).reduceByKey(lambda a, b: a + b)
-    word_count.saveAsTextFile("/home/results")
+    t1 = time.time()
+
+    sc.stop()
+
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("\n\nElapsedtime: {} s\n\n".format(t1-t0)) 
+    
+    plt.imshow(fractal)
+    #plt.show()
+    plt.savefig("dane.jpg")
