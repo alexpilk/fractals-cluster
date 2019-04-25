@@ -1,0 +1,25 @@
+body {
+    background-color: rgb(11, 0, 71);
+    font-family: 'Lato', sans-serif;
+    color: #FFF;
+    font-weight: bold;
+    margin: 0;
+    padding: 0px;
+}
+
+.mainContainer {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.mainContainer .inputBox {
+    display: flex;
+    margin-top: 10px;
+    flex-direction: column
+}
+
+.mainContainer input, button {
+    width: 220px;
+}
