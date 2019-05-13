@@ -53,6 +53,14 @@ def readJSON():
 
     return data
 
+#TO DO: zapytać czy to tak ma być
+def sendJSON(jsonData):
+    myurl = "nasz url"
+    req = urllib.request.Request(myurl)
+    req.add_header('Content-Type', 'application/json; charset=utf-8')
+
+    response = urllib.request.urlopen(req, jsonData)
+
 
 #TO DO: obraz do base64
 # name - nazwa fraktala, x,y- rozdzielczość, re,im - dla jakiej liczby zespolonej policzono fraktal, maxIt - maksymalna liczba iteracji, img - w formacie base64
@@ -132,3 +140,4 @@ if __name__ == "__main__":
         print("Json do wysłania:", jsonToSend)
 
         #wysłanie JSONA
+        #sendJSON(jsonToSend)
