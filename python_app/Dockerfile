@@ -17,7 +17,7 @@ RUN cd /app \
 
 # Copy the source code
 COPY app.py /app/app.py
-
+RUN pip3 install requests
 ARG args
 ENV SPARK_APPLICATION_PYTHON_LOCATION /app/app.py
 ENV SPARK_APPLICATION_ARGS ${args}
