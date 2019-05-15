@@ -48,7 +48,7 @@ def mandelbrot_calculate(p):
 
 #TO DO: sprawdzić czy to tak ma być
 def readJSON():
-    x = input("JSON ze strony w formacie({ \"name\": \"julia\", \"maxIt\":200, \"re\":-0.10, \"im\":0.65, \"h\":300, \"w\":300, \"p1\":-1.5, \"p2\":-1.5, \"k1\":1.5, \"k2\":1.5 }): ")
+    data = input("JSON ze strony w formacie({ \"name\": \"julia\", \"maxIt\":200, \"re\":-0.10, \"im\":0.65, \"h\":300, \"w\":300, \"p1\":-1.5, \"p2\":-1.5, \"k1\":1.5, \"k2\":1.5 }): ")
 
     #with urllib.request.urlopen("jakis adres") as url:
     #    data = json.loads(url.read().decode())
