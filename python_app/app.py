@@ -1,53 +1,145 @@
-import os
-
+#
+# Mandelbrotfractal--on Spark
+#
+import sys
+import time
+import numpy as np
+import matplotlib.pyplot as plt
+import json
+import urllib.request
+import base64
 from pyspark import SparkContext
 
+c = -0.73+0.19j
+maxit = 0
 
-text = """
-Lorem ipsum dolor sit amet, 
-consectetur adipiscing elit. 
-Aenean sit amet maximus neque, 
-vitae semper erat. Sed quis mi bibendum, 
-ultricies sem et, congue ligula. 
-Curabitur malesuada dolor quis nulla volutpat tincidunt. 
-Pellentesque et iaculis odio. 
-Vestibulum nec dolor et leo maximus blandit. 
-Mauris ultrices semper felis, 
-id ullamcorper mauris porttitor eget. 
-Etiam tristique orci nec dolor semper aliquet. 
-Nunc aliquam vestibulum turpis, 
-quis pharetra dui fermentum quis. 
-In nulla lectus, ornare sed ante in, 
-consequat rhoncus nisl. 
-Sed blandit erat eget felis cursus sollicitudin at at odio. 
-Orci varius natoque penatibus et magnis dis parturient montes, 
-nascetur ridiculus mus. Morbi leo neque, vestibulum a pharetra non, 
-fermentum eget elit. Donec sollicitudin justo augue, 
-vitae tincidunt enim viverra vitae. Nulla a libero venenatis, 
-consectetur nunc a, rhoncus quam.
+# p --griddla ktorego policzymy fraktal
+def julia_calculate(p):
+    global c, maxit
+    #c = -0.73+0.19j #-0.10+0.65j
+    z = p
+    divtime = maxit + np.zeros(z.shape, dtype=int)
 
-Nulla orci est, imperdiet eget congue in, 
-feugiat vitae quam. Duis sollicitudin tortor ac nulla porta dignissim. 
-In ac scelerisque sem. Nunc gravida ipsum nisi, 
-a ornare sapien aliquam eget. Cras gravida leo libero,
-ac aliquam ex pharetra nec. 
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; 
-Vivamus ut velit eget nisl maximus finibus sit amet at urna. 
-Aliquam erat volutpat. Pellentesque lorem magna, tempus vitae iaculis. 
-"""
+    for i in range(maxit):
+        z = z ** 2 + c
+        diverge = z * np.conj(z) > 2 ** 2  # who is diverging
+        div_now = diverge & (divtime == maxit)  # who is diverging now
+        divtime[div_now] = i  # note when
+        z[diverge] = 2  # avoi ddiverg. too much
 
+    return divtime
+
+
+# p --griddla ktorego policzymy fraktal
+def mandelbrot_calculate(p):
+    global maxit
+    z = p
+    divtime = maxit + np.zeros(z.shape, dtype=int)
+
+    for i in range(maxit):
+        z = z ** 2 + p
+        diverge = z * np.conj(z) > 2 ** 2  # who is diverging
+        div_now = diverge & (divtime == maxit)  # who is diverging now
+        divtime[div_now] = i  # note when
+        z[diverge] = 2  # avoi ddiverg. too much
+
+    return divtime
+
+
+#TO DO: sprawdzić czy to tak ma być
+def readJSON():
+    data = input("JSON ze strony w formacie({ \"name\": \"julia\", \"maxIt\":200, \"re\":-0.10, \"im\":0.65, \"h\":300, \"w\":300, \"p1\":-1.5, \"p2\":-1.5, \"k1\":1.5, \"k2\":1.5 }): ")
+
+    #with urllib.request.urlopen("jakis adres") as url:
+    #    data = json.loads(url.read().decode())
+
+    return data
+
+
+#TO DO: sprawdzić czy to tak ma być
+def sendJSON(jsonData):
+    myurl = "nasz url"
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    r = requests.post(url, data=jsonData, headers=headers)
+
+    #req = urllib.request.Request(myurl)
+    #req.add_header('Content-Type', 'application/json; charset=utf-8')
+    #response = urllib.request.urlopen(req, jsonData)
+
+
+# name - nazwa fraktala, x,y- rozdzielczość, re,im - dla jakiej liczby zespolonej policzono fraktal, maxIt - maksymalna liczba iteracji, img - w formacie base64
+def dataToJSON(name, x, y, liczbaZesp, maxIt, img):
+    data = {
+        "name": name,
+        "x": x,
+        "y": y,
+        #"liczbaZespolona": liczbaZesp.__str__(),
+        "maxit": maxIt,
+        "image": img
+    }
+
+    jsonData = json.dumps(data)
+
+    return jsonData
 
 if __name__ == "__main__":
+                            #otrzymany json
+    x = readJSON()
+    #x = '{ "name": "julia", "maxIt":200, "re":-0.10, "im":0.65, "h":300, "w":300, "p1":-1.5, "p2":-1.5, "k1":1.5, "k2":1.5 }'
+    print("json x:", x )
+    y = json.loads(x)
+
+                            # zmienne, które będą wczytywane z jsona
+    liczbaZesp = 0+0j
+    liczbaZesp += y["re"]
+    liczbaZesp += y["im"]*1j
+    fractalOption = y["name"]                   #"mandelbrot" / "julia"#
+    c = liczbaZesp                              #liczba zespolona
+    maxit = y["maxIt"]
+    h = y["h"]                                  #rozdzielczosc y
+    w = y["w"]                                  #rozdzielczosc x
+    p1 = y["p1"]                                #obszary generowania obrazu
+    p2 = y["p2"]
+    k1 = y["k1"]
+    k2 = y["k2"]
+                                                #dodatkowo ewentualnie jakieś kolory
+    ##########
+
     context = SparkContext("local", "first app")
 
-    path = os.path.join(os.getcwd(), "dataset.txt")
+    y, x = np.ogrid[p1:k1:h * 1j, p2:k2:w * 1j]
+    grid = x + y * 1j  # gridh x w punktow
 
-    with open(path, 'w') as f:
-        f.write(text)
+    t0 = time.time()
 
-    # read in text file and split each document into words
-    words = context.textFile(path).flatMap(lambda line: line.split(" "))
+    grid_rdd = context.parallelize(grid, 2)             # stworzenie RDD z 2 partycjami
 
-    # count the occurrence of each word
-    word_count = words.map(lambda word: (word, 1)).reduceByKey(lambda a, b: a + b)
-    word_count.saveAsTextFile("/home/results")
+    if fractalOption == "julia":
+        grid_rdd2 = grid_rdd.map(julia_calculate)       # stworzenie kolejnego RDD na podstawie istniejącego RDD, dla każdego elementu z grid_rdd wykonywana jest funkcja julia_calculate
+    elif fractalOption == "mandelbrot":
+        grid_rdd2 = grid_rdd.map(mandelbrot_calculate)
+
+    fractal = grid_rdd2.collect()                       # collect() --zbieramy wyniki do drivera
+
+    t1 = time.time()
+
+    context.stop()
+
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("\n\nElapsedtime: {} s\n\n".format(t1 - t0))
+
+    plt.imshow(fractal)
+    plt.show()
+    plt.savefig("fraktal.png")
+
+    with open("fraktal.png", "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode('ascii') #obraz do base64
+
+        print("obraz po enkodzie:", encoded_string)
+
+        jsonToSend = dataToJSON(fractalOption, w, h, liczbaZesp, maxit, encoded_string)
+
+        print("Json do wysłania:", jsonToSend)
+
+                                        #wysłanie JSONA
+        sendJSON(jsonToSend)
