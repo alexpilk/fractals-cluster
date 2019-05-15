@@ -46,23 +46,27 @@ def mandelbrot_calculate(p):
     return divtime
 
 
-#TO DO: zapytać czy to tak ma być
+#TO DO: sprawdzić czy to tak ma być
 def readJSON():
-    with urllib.request.urlopen("jakis adres") as url:
-        data = json.loads(url.read().decode())
+    x = input("JSON ze strony w formacie({ \"name\": \"julia\", \"maxIt\":200, \"re\":-0.10, \"im\":0.65, \"h\":300, \"w\":300, \"p1\":-1.5, \"p2\":-1.5, \"k1\":1.5, \"k2\":1.5 }): ")
+
+    #with urllib.request.urlopen("jakis adres") as url:
+    #    data = json.loads(url.read().decode())
 
     return data
 
-#TO DO: zapytać czy to tak ma być
+
+#TO DO: sprawdzić czy to tak ma być
 def sendJSON(jsonData):
     myurl = "nasz url"
-    req = urllib.request.Request(myurl)
-    req.add_header('Content-Type', 'application/json; charset=utf-8')
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    r = requests.post(url, data=jsonData, headers=headers)
 
-    response = urllib.request.urlopen(req, jsonData)
+    #req = urllib.request.Request(myurl)
+    #req.add_header('Content-Type', 'application/json; charset=utf-8')
+    #response = urllib.request.urlopen(req, jsonData)
 
 
-#TO DO: obraz do base64
 # name - nazwa fraktala, x,y- rozdzielczość, re,im - dla jakiej liczby zespolonej policzono fraktal, maxIt - maksymalna liczba iteracji, img - w formacie base64
 def dataToJSON(name, x, y, liczbaZesp, maxIt, img):
     data = {
@@ -79,15 +83,13 @@ def dataToJSON(name, x, y, liczbaZesp, maxIt, img):
     return jsonData
 
 if __name__ == "__main__":
-
-
-    #otrzymany json
-    x = '{ "name": "julia", "maxIt":200, "re":-0.10, "im":0.65, "h":300, "w":300, "p1":-1.5, "p2":-1.5, "k1":1.5, "k2":1.5 }'
-    #x = readJSON()
+                            #otrzymany json
+    x = readJSON()
+    #x = '{ "name": "julia", "maxIt":200, "re":-0.10, "im":0.65, "h":300, "w":300, "p1":-1.5, "p2":-1.5, "k1":1.5, "k2":1.5 }'
     print("json x:", x )
     y = json.loads(x)
 
-    # zmienne, które będą wczytywane z jsona
+                            # zmienne, które będą wczytywane z jsona
     liczbaZesp = 0+0j
     liczbaZesp += y["re"]
     liczbaZesp += y["im"]*1j
@@ -100,7 +102,7 @@ if __name__ == "__main__":
     p2 = y["p2"]
     k1 = y["k1"]
     k2 = y["k2"]
-    #dodatkowo ewentualnie jakieś kolory
+                                                #dodatkowo ewentualnie jakieś kolory
     ##########
 
     context = SparkContext("local", "first app")
@@ -110,14 +112,14 @@ if __name__ == "__main__":
 
     t0 = time.time()
 
-    grid_rdd = context.parallelize(grid, 2)  # stworzenie RDD z 2 partycjami
+    grid_rdd = context.parallelize(grid, 2)             # stworzenie RDD z 2 partycjami
 
     if fractalOption == "julia":
-        grid_rdd2 = grid_rdd.map(julia_calculate) # stworzenie kolejnego RDD na podstawie istniejącego RDD, dla każdego elementu z grid_rdd wykonywana jest funkcja julia_calculate
+        grid_rdd2 = grid_rdd.map(julia_calculate)       # stworzenie kolejnego RDD na podstawie istniejącego RDD, dla każdego elementu z grid_rdd wykonywana jest funkcja julia_calculate
     elif fractalOption == "mandelbrot":
         grid_rdd2 = grid_rdd.map(mandelbrot_calculate)
 
-    fractal = grid_rdd2.collect()  # collect() --zbieramy wyniki do drivera
+    fractal = grid_rdd2.collect()                       # collect() --zbieramy wyniki do drivera
 
     t1 = time.time()
 
@@ -131,7 +133,7 @@ if __name__ == "__main__":
     plt.savefig("fraktal.png")
 
     with open("fraktal.png", "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read()).decode('ascii')
+        encoded_string = base64.b64encode(image_file.read()).decode('ascii') #obraz do base64
 
         print("obraz po enkodzie:", encoded_string)
 
@@ -139,5 +141,5 @@ if __name__ == "__main__":
 
         print("Json do wysłania:", jsonToSend)
 
-        #wysłanie JSONA
-        #sendJSON(jsonToSend)
+                                        #wysłanie JSONA
+        sendJSON(jsonToSend)
