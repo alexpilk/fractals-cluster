@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Fractals</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="styles.css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700&amp;subset=latin-ext" rel="stylesheet">
+    <script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router@3.0.6/dist/vue-router.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.5.1/vue-resource.js"></script>
+</head>
+<body>
+<!-- **************************** SIGN IN SECTION *******************************
+    ************************************************************************* -->
+    <div id="app">
+        <div class="menuBarContainer">
+            <div class="h2"><a href='#'>Fractals</a></div>
+            <nav id="nav" v-if="!authorization">
+                <ul>
+                    <li><router-link to="/">Home</router-link></li>
+                    <li><router-link to="/signin">Sign in</router-link></li>
+                    <li><router-link to="/signup">Sign up</router-link></li>
+                    <li><router-link to="/abuot">About</router-link></li>
+                </ul>
+            </nav>
+            <nav id="nav" v-if="authorization">
+                    <ul>
+                        <li><router-link to="/">Home</router-link></li>
+                        <li v-on:click="authorization = !authorization"><router-link to="/">Log out</router-link></li>
+                        <li><router-link to="/online">Profile</router-link></li>
+                        <li><router-link to="/abuot">About</router-link></li>
+                    </ul>
+                </nav>
+        </div>
+        
+        <router-view></router-view>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>    
