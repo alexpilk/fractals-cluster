@@ -181,7 +181,7 @@ var online = {
                     </div>
                 </form>
                 <div class="buttonContainer">
-                    <button v-on:submit.prevent="sendFractal">send</button>
+                    <button v-on:click.prevent="sendFractal">send</button>
                 </div>
             </div>
         </div>
@@ -221,8 +221,8 @@ var online = {
                 p2: this.fractal.p2,
                 k2: this.fractal.k2
             }).then(function(data){
-                
-            });
+                this.getFractal()
+;            });
         },
         getFractal: function(){
             this.$http.get('http://35.238.239.157:8000/fractal/').then(function(data, status, reques) {
