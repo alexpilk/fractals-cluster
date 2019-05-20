@@ -92,9 +92,10 @@ def dataToJSON(name, x, y, liczbaZesp, maxIt, img):
 
 if __name__ == "__main__":
 
-    # x = '{ "name": "julia", "maxIt":200, "re":-0.10, "im":0.65, "h":300, "w":300, "p1":-1.5, "p2":-1.5, "k1":1.5, "k2":1.5 }'
+    y = {"name": "julia", "maxIt": 200, "re": -0.10, "im": 0.65, "h": 300, "w": 300, "p1": -1.5, "p2": -1.5, "k1": 1.5,
+         "k2": 1.5}
 
-    y = readJSON()
+    # y = readJSON()
 
     # zmienne, które będą wczytywane z jsona
     liczbaZesp = 0 + 0j
@@ -139,8 +140,8 @@ if __name__ == "__main__":
     plt.imshow(fractal)
     plt.show()
     plt.axis('off')
-    fig.axes.get_xaxis().set_visible(False)
-    fig.axes.get_yaxis().set_visible(False)
+    fractal.axes.get_xaxis().set_visible(False)
+    fractal.axes.get_yaxis().set_visible(False)
     plt.savefig("fraktal.png", bbox_inches='tight', pad_inches=0)
 
     with open("fraktal.png", "rb") as image_file:

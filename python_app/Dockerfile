@@ -8,8 +8,8 @@ COPY requirements.txt /app/
 RUN apk add 'readline<8' 
 RUN apk add --update --no-cache	python3 python3-dev libgfortran \ 
 				build-base libstdc++ \
-                                libpng libpng-dev \
-                                freetype freetype-dev 
+                libpng libpng-dev \
+                freetype freetype-dev
                                 
 RUN pip3 install --upgrade pip
 RUN cd /app \
