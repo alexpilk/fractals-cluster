@@ -74,14 +74,15 @@ def sendJSON(jsonData):
 
 
 # name - nazwa fraktala, x,y- rozdzielczość, re,im - dla jakiej liczby zespolonej policzono fraktal, maxIt - maksymalna liczba iteracji, img - w formacie base64
-def dataToJSON(name, x, y, liczbaZesp, maxIt, img):
+def dataToJSON(name, x, y, liczbaZesp, maxIt, img, user):
     data = {
         "name": name,
         "x": x,
         "y": y,
         #"liczbaZespolona": liczbaZesp.__str__(),
         "maxit": maxIt,
-        "image": img
+        "image": img,
+        'user': user
     }
 
     jsonData = json.dumps(data)
@@ -99,6 +100,7 @@ if __name__ == "__main__":
     liczbaZesp += y["re"]
     liczbaZesp += y["im"]*1j
     fractalOption = y["name"]                   #"mandelbrot" / "julia"#
+    user = y['user']
     c = liczbaZesp                              #liczba zespolona
     maxit = y["maxIt"]
     h = y["h"]                                  #rozdzielczosc y
@@ -142,7 +144,7 @@ if __name__ == "__main__":
 
         print("obraz po enkodzie:", encoded_string)
 
-        jsonToSend = dataToJSON(fractalOption, w, h, liczbaZesp, maxit, encoded_string)
+        jsonToSend = dataToJSON(fractalOption, w, h, liczbaZesp, maxit, encoded_string, user)
 
         print("Json do wysłania:", jsonToSend)
 

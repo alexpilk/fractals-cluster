@@ -28,7 +28,7 @@ def fractal_request_handler(request):
 def results_handler(request):
     import json
     data = json.loads(request.body.decode("utf-8"))
-    images[data['name']] = data['image']
+    images[data['user']] = data['image']
     return HttpResponse('Fractal collected')
 
 
@@ -37,9 +37,14 @@ def image_preview(request):
     # import json
     # print(request.GET['name'])
     # data = json.loads(request.params.decode("utf-8"))
-    imgstring = images[request.GET['name']]
+    imgstring = images[request.GET['user']]
     image_64_decode = base64.b64decode(imgstring)
     return HttpResponse(image_64_decode, content_type="image/png")
+
+
+def image_preview_base64(request):
+    imgstring = images[request.GET['user']]
+    return HttpResponse(imgstring)
 
 
 urlpatterns = [
@@ -50,5 +55,6 @@ urlpatterns = [
     path('fractal/', fractal_request_handler),
     path('results/', results_handler),
     path('preview/', image_preview),
+    path('preview64/', image_preview_base64),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
 ]
