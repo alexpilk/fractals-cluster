@@ -48,7 +48,12 @@ def mandelbrot_calculate(p):
 
 #TO DO: sprawdzić czy to tak ma być
 def readJSON():
-    data = input("JSON ze strony w formacie({ \"name\": \"julia\", \"maxIt\":200, \"re\":-0.10, \"im\":0.65, \"h\":300, \"w\":300, \"p1\":-1.5, \"p2\":-1.5, \"k1\":1.5, \"k2\":1.5 }): ")
+    import json
+    import sys
+    print(type(sys.argv[1]))
+    print(sys.argv[1])
+    data = json.loads(sys.argv[1].replace('\'', '"'))
+    # data = input("JSON ze strony w formacie({ \"name\": \"julia\", \"maxIt\":200, \"re\":-0.10, \"im\":0.65, \"h\":300, \"w\":300, \"p1\":-1.5, \"p2\":-1.5, \"k1\":1.5, \"k2\":1.5 }): ")
 
     #with urllib.request.urlopen("jakis adres") as url:
     #    data = json.loads(url.read().decode())
@@ -58,9 +63,10 @@ def readJSON():
 
 #TO DO: sprawdzić czy to tak ma być
 def sendJSON(jsonData):
+    import requests
     myurl = "nasz url"
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    r = requests.post(url, data=jsonData, headers=headers)
+    r = requests.post('http://35.238.239.157:8000/results/', data=jsonData, headers=headers)
 
     #req = urllib.request.Request(myurl)
     #req.add_header('Content-Type', 'application/json; charset=utf-8')
@@ -68,14 +74,15 @@ def sendJSON(jsonData):
 
 
 # name - nazwa fraktala, x,y- rozdzielczość, re,im - dla jakiej liczby zespolonej policzono fraktal, maxIt - maksymalna liczba iteracji, img - w formacie base64
-def dataToJSON(name, x, y, liczbaZesp, maxIt, img):
+def dataToJSON(name, x, y, liczbaZesp, maxIt, img, user):
     data = {
         "name": name,
         "x": x,
         "y": y,
         #"liczbaZespolona": liczbaZesp.__str__(),
         "maxit": maxIt,
-        "image": img
+        "image": img,
+        'user': user
     }
 
     jsonData = json.dumps(data)
@@ -83,17 +90,17 @@ def dataToJSON(name, x, y, liczbaZesp, maxIt, img):
     return jsonData
 
 if __name__ == "__main__":
-                            #otrzymany json
-    x = readJSON()
+
     #x = '{ "name": "julia", "maxIt":200, "re":-0.10, "im":0.65, "h":300, "w":300, "p1":-1.5, "p2":-1.5, "k1":1.5, "k2":1.5 }'
-    print("json x:", x )
-    y = json.loads(x)
+
+    y = readJSON()
 
                             # zmienne, które będą wczytywane z jsona
     liczbaZesp = 0+0j
     liczbaZesp += y["re"]
     liczbaZesp += y["im"]*1j
     fractalOption = y["name"]                   #"mandelbrot" / "julia"#
+    user = y['user']
     c = liczbaZesp                              #liczba zespolona
     maxit = y["maxIt"]
     h = y["h"]                                  #rozdzielczosc y
@@ -137,7 +144,7 @@ if __name__ == "__main__":
 
         print("obraz po enkodzie:", encoded_string)
 
-        jsonToSend = dataToJSON(fractalOption, w, h, liczbaZesp, maxit, encoded_string)
+        jsonToSend = dataToJSON(fractalOption, w, h, liczbaZesp, maxit, encoded_string, user)
 
         print("Json do wysłania:", jsonToSend)
 

@@ -13,12 +13,14 @@ RUN apk add --update --no-cache	python3 python3-dev libgfortran \
                                 
 RUN pip3 install --upgrade pip
 RUN cd /app \
-      && pip3 install -r requirements.txt
+      && pip3 install -r requirements.txt --no-cache-dir
 
 # Copy the source code
 COPY app.py /app/app.py
-
+RUN pip3 install requests
+ARG args
 ENV SPARK_APPLICATION_PYTHON_LOCATION /app/app.py
+ENV SPARK_APPLICATION_ARGS ${args}
 
 RUN chmod 755 /template.sh
 
