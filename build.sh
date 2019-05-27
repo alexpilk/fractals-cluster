@@ -1,5 +1,5 @@
 #!/bin/bash
 
 docker build -t spark-base:spark-2.4.3_hadoop-2.7 base/
-docker build master/
-docker build worker/
+docker build -t spark-master:spark-2.4.3_hadoop-2.7 master/
+docker build -t spark-worker:spark-2.4.3_hadoop-2.7 worker/
