@@ -50,11 +50,11 @@ def mandelbrot_calculate(p):
 def readJSON():
     import json
     import sys
-    print(type(sys.argv[1]))
-    print(sys.argv[1])
-    data = json.loads(sys.argv[1].replace('\'', '"'))
-    # data = input("JSON ze strony w formacie({ \"name\": \"julia\", \"maxIt\":200, \"re\":-0.10, \"im\":0.65, \"h\":300, \"w\":300, \"p1\":-1.5, \"p2\":-1.5, \"k1\":1.5, \"k2\":1.5 }): ")
-
+    #print(type(sys.argv[1]))
+    #print(sys.argv[1])
+    #data = json.loads(sys.argv[1].replace('\'', '"'))
+    #data = input("JSON ze strony w formacie({ \"name\": \"julia\", \"maxIt\":200, \"re\":-0.10, \"im\":0.65, \"h\":300, \"w\":300, \"p1\":-1.5, \"p2\":-1.5, \"k1\":1.5, \"k2\":1.5 }): ")
+    data = input("{ \"user\": \"gerwazy\", \"name\": \"julia\", \"maxIt\":200, \"re\":-0.10, \"im\":0.65, \"h\":300, \"w\":300, \"p1\":-1.5, \"p2\":-1.5, \"k1\":1.5, \"k2\":1.5 }")
     #with urllib.request.urlopen("jakis adres") as url:
     #    data = json.loads(url.read().decode())
 
@@ -91,9 +91,9 @@ def dataToJSON(name, x, y, liczbaZesp, maxIt, img, user):
 
 if __name__ == "__main__":
 
-    #x = '{ "name": "julia", "maxIt":200, "re":-0.10, "im":0.65, "h":300, "w":300, "p1":-1.5, "p2":-1.5, "k1":1.5, "k2":1.5 }'
 
     y = readJSON()
+    #y = '{ "name": "julia", "maxIt":200, "re":-0.10, "im":0.65, "h":300, "w":300, "p1":-1.5, "p2":-1.5, "k1":1.5, "k2":1.5 }'
 
                             # zmienne, które będą wczytywane z jsona
     liczbaZesp = 0+0j

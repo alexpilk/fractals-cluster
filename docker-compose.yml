@@ -17,3 +17,43 @@ services:
       - "8081:8081"
     environment:
       - "SPARK_MASTER=spark://spark-master:7077"
+      
+  spark-worker-2:
+    image: spark-worker:spark-2.4.3_hadoop-2.7
+    container_name: spark-worker-2
+    depends_on:
+      - spark-master
+    ports:
+      - "8082:8082"
+    environment:
+      - "SPARK_MASTER=spark://spark-master:7077"
+      
+  spark-worker-3:
+    image: spark-worker:spark-2.4.3_hadoop-2.7
+    container_name: spark-worker-3
+    depends_on:
+      - spark-master
+    ports:
+      - "8083:8083"
+    environment:
+      - "SPARK_MASTER=spark://spark-master:7077"
+      
+  spark-worker-4:
+    image: spark-worker:spark-2.4.3_hadoop-2.7
+    container_name: spark-worker-4
+    depends_on:
+      - spark-master
+    ports:
+      - "8084:8084"
+    environment:
+      - "SPARK_MASTER=spark://spark-master:7077"
+      
+  spark-worker-5:
+    image: spark-worker:spark-2.4.3_hadoop-2.7
+    container_name: spark-worker-5
+    depends_on:
+      - spark-master
+    ports:
+      - "8085:8085"
+    environment:
+      - "SPARK_MASTER=spark://spark-master:7077"
