@@ -115,11 +115,11 @@ if __name__ == "__main__":
     context = SparkContext("local", "first app")
 
     y, x = np.ogrid[p1:k1:h * 1j, p2:k2:w * 1j]
-    grid = x + y * 1j  # gridh x w punktow
+    grid = x + y * 1j  # grid h x w punktow
 
     t0 = time.time()
 
-    grid_rdd = context.parallelize(grid, 2)             # stworzenie RDD z 2 partycjami
+    grid_rdd = context.parallelize(grid)             # stworzenie RDD, ilosć partycji dobierana automatycznie przez sparka
 
     if fractalOption == "julia":
         grid_rdd2 = grid_rdd.map(julia_calculate)       # stworzenie kolejnego RDD na podstawie istniejącego RDD, dla każdego elementu z grid_rdd wykonywana jest funkcja julia_calculate
