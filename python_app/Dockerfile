@@ -1,4 +1,4 @@
-FROM spark-base:spark-2.4.3_hadoop-2.7 
+FROM spark-submit:spark-2.4.3_hadoop-2.7
 
 RUN apk add 'readline<8' 
 RUN apk add --update \
