@@ -65,26 +65,12 @@ export default {
 
       // },
       login: function(){
-        const LOGIN_PAGE_URL = 'http://35.238.239.157:8000/login/';
-        this.$cookies.set('csrftoken', this.csrf_token);
-        let csrf = this.$cookies.get('csrftoken');
+        const LOGIN_PAGE_URL = 'http://35.238.239.157:8000/login/'
+        const formData = new FormData();
+        formData.append('username', this.user.username);
+        formData.append('password', this.user.password);
 
-        const requestOptions = {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          data: JSON.stringify({'csrfmiddlewaretoken': this.csrfmiddlewaretoken, 'username': this.user.username, 'password': this.user.password}),
-          cookies: {
-            'csrftoken': this.csrf_token
-          }
-        };
-        
-        // this.csrf_token = this.$cookies.get('csrftoken');
-        // const requestOptions = {
-        //   method: "POST",
-        //   data: JSON.stringify({'csrfmiddlewaretoken': csrf, 'username': this.user.username, 'password': this.user.password}), 
-        //   headers: {'X_CSRFTOKEN': csrf }
-        // }
-        this.$http.post(LOGIN_PAGE_URL, requestOptions)
+        this.$http.post(LOGIN_PAGE_URL, formData)
           .then(request => this.loginSuccessful(request))
           .catch(() => this.loginFailed())
       },
