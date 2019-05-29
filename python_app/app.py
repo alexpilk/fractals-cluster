@@ -92,8 +92,8 @@ def dataToJSON(name, x, y, liczbaZesp, maxIt, img, user):
 if __name__ == "__main__":
 
 
-    y = readJSON()
-    #y = '{ "name": "julia", "maxIt":200, "re":-0.10, "im":0.65, "h":300, "w":300, "p1":-1.5, "p2":-1.5, "k1":1.5, "k2":1.5 }'
+    #y = readJSON()
+    y = '{ "name": "julia", "maxIt":200, "re":-0.10, "im":0.65, "h":300, "w":300, "p1":-1.5, "p2":-1.5, "k1":1.5, "k2":1.5 }'
 
                             # zmienne, które będą wczytywane z jsona
     liczbaZesp = 0+0j
