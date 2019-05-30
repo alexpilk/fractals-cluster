@@ -1,3 +1,7 @@
+import django
+django.views.decorators.csrf.csrf_protect = lambda x: x
+
+
 from django.contrib import admin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView, LogoutView
@@ -6,6 +10,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic.base import TemplateView
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
 class SignUp(generic.CreateView):
@@ -49,12 +54,12 @@ def image_preview_base64(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/', LoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
-    path('signup/', SignUp.as_view(), name='signup'),
-    path('fractal/', fractal_request_handler),
-    path('results/', results_handler),
-    path('preview/', image_preview),
-    path('preview64/', image_preview_base64),
+    path('login/', csrf_exempt(LoginView.as_view()), name='login'),
+    path('logout/', csrf_exempt(LogoutView.as_view()), name='logout'),
+    path('signup/', csrf_exempt(SignUp.as_view()), name='signup'),
+    path('fractal/', csrf_exempt(fractal_request_handler)),
+    path('results/', csrf_exempt(results_handler)),
+    path('preview/', csrf_exempt(image_preview)),
+    path('preview64/', csrf_exempt(image_preview_base64)),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
 ]
