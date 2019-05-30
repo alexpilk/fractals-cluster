@@ -1,16 +1,54 @@
 import django
-django.views.decorators.csrf.csrf_protect = lambda x: x
 
+django.views.decorators.csrf.csrf_protect = lambda x: x
 
 from django.contrib import admin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView, LogoutView
-from django.urls import path, include
+from django.urls import path
 from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic.base import TemplateView
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+import json
+import os
+
+
+class LopataResponse(HttpResponse):
+    def __init__(self, data, then_callback, **kwargs):
+        super().__init__(data, **kwargs)
+        self.then_callback = then_callback
+
+    def close(self):
+        super().close()
+        self.then_callback()
+
+
+class RequestMonitor:
+    MAX_PROCESSING_REQUESTS = 4
+    PROCESSING_REQUESTS = 0
+    REQUEST_QUEUE = []
+
+    @classmethod
+    def add_to_queue(cls, request):
+        cls.REQUEST_QUEUE.append(request)
+
+    @classmethod
+    def take_from_queue(cls):
+        return cls.REQUEST_QUEUE.pop(0)
+
+    @classmethod
+    def notify_about_new_request(cls):
+        cls.PROCESSING_REQUESTS += 1
+
+    @classmethod
+    def notify_about_finishing_request(cls):
+        cls.PROCESSING_REQUESTS -= 1
+
+    @classmethod
+    def busy(cls):
+        return cls.PROCESSING_REQUESTS >= cls.MAX_PROCESSING_REQUESTS
 
 
 class SignUp(generic.CreateView):
@@ -19,36 +57,62 @@ class SignUp(generic.CreateView):
     template_name = 'signup.html'
 
 
-images = {}
-
-
-def fractal_request_handler(request):
-    import os, re
+def _process_fractal_request(request_string):
+    data = json.loads(request_string)
     os.system('cd ../python_app && docker-compose build --build-arg args="{}" app && docker-compose up -d'.format(
-        request.body.decode("utf-8").replace("\"", "'").replace(' ', '')
+        request_string.replace("\"", "'").replace(' ', '')
     ))
+    try:
+        os.remove(data['user'])
+    except OSError:
+        pass
     return HttpResponse('Fractal requested')
 
 
+def fractal_request_handler(request):
+    request_string = request.body.decode("utf-8")
+    if RequestMonitor.busy():
+        RequestMonitor.add_to_queue(request_string)
+        return HttpResponse('Fractal request put into queue')
+    RequestMonitor.notify_about_new_request()
+    return _process_fractal_request(request_string)
+
+
+def _next_request_from_queue_callback():
+    try:
+        next_request = RequestMonitor.take_from_queue()
+    except IndexError:
+        pass
+    else:
+        _process_fractal_request(next_request)
+
+
+def _load_image(user):
+    with open(user) as image:
+        return image.read()
+
+
+def _save_image(user, image_content):
+    with open(user, 'w+') as image:
+        image.write(image_content)
+
+
 def results_handler(request):
-    import json
+    RequestMonitor.notify_about_finishing_request()
     data = json.loads(request.body.decode("utf-8"))
-    images[data['user']] = data['image']
-    return HttpResponse('Fractal collected')
+    _save_image(data['user'], data['image'])
+    return LopataResponse('Fractal collected', _next_request_from_queue_callback)
 
 
 def image_preview(request):
     import base64
-    # import json
-    # print(request.GET['name'])
-    # data = json.loads(request.params.decode("utf-8"))
-    imgstring = images[request.GET['user']]
+    imgstring = _load_image(request.GET['user'])
     image_64_decode = base64.b64decode(imgstring)
     return HttpResponse(image_64_decode, content_type="image/png")
 
 
 def image_preview_base64(request):
-    imgstring = images[request.GET['user']]
+    imgstring = _load_image(request.GET['user'])
     return HttpResponse(imgstring)
 
 
