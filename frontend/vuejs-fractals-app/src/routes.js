@@ -47,17 +47,18 @@ export const router = new Router({
   });
 
   router.beforeEach((to, from, next) => {
-    // redirect to login page if not logged in and trying to access a restricted page
-    const publicPages = ['/signin'];
-    const authRequired = !publicPages.includes(to.path);
-    const loggedIn = localStorage.getItem('user');
-  
-    if (authRequired && !loggedIn) {
-    //   return next({ 
-    //     path: '/signin', 
-    //     query: { returnUrl: to.path } 
-    //   });
+
+    if(to.fullPath === '/online') {
+      if(localStorage.username === undefined) {
+        next('/signin');
+      }
     }
-  
+
+    if(to.fullPath === '/signin' || to.fullPath === '/signup' || to.fullPath === '/' || to.fullPath === '/about') {
+      if(localStorage.username !== undefined) {
+        next('/online');
+      }
+    }
+
     next();
   })

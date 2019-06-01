@@ -32,7 +32,7 @@ export const userService = {
 
 function logout() {
     // remove user from local storage to log user out
-    localStorage.removeItem('user');
+    localStorage.removeItem('username');
 }
 
 function handleResponse(response) {

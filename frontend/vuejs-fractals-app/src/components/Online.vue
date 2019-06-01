@@ -1,5 +1,7 @@
 <template>
-    <div class="fractalContainer">
+    <div class="container">
+        <online-menu></online-menu>
+        <div class="fractalContainer">
             <div class="imgContainer">
                 <img v-bind:src="fractalImg" alt="">
             </div>
@@ -54,14 +56,19 @@
                 </form>
             </div>
         </div>
+    </div>
 </template>
 
 <script>
+import Menu from './MenuOnline.vue'
+
 export default {
-    
+    name: 'online',
+    components: {
+        'online-menu': Menu
+    },
     data(){
         return{
-            username: 'tomek',
             data: '',
             fractalImg: '',
             fractalsName: [
@@ -69,6 +76,7 @@ export default {
                 "julia"
             ],
             fractal: {
+                user: '',
                 name: 'julia',
                 maxIt: 200,
                 re: -0.10,
@@ -84,13 +92,10 @@ export default {
     },
     methods: {
         sendFractal: function(){
+        this.fractal.user = localStorage.username;
         const BASE_URL = 'http://35.238.239.157:8000/fractal/';
-        const requesOption = {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(this.fractal)
-        };
-            this.$http.post(BASE_URL, requesOption
+
+            this.$http.post(BASE_URL, this.fractal
             ).then(function(data){
                 this.getFractal();
             });
@@ -99,11 +104,12 @@ export default {
         getFractal: function(){
             const RE_URL = 'http://35.238.239.157:8000/preview64/?';
             var self = this;
-            setInterval(function() {
-                self.$http.get('http://35.238.239.157:8000/preview64/?user='+self.username).then(function(response) {
+            let interval = setInterval(function() {
+                self.$http.get('http://35.238.239.157:8000/preview64/?user='+self.fractal.user).then(function(response) {
                    if(response.status == "200") {
                         let fBase64 = response.bodyText;
                         self.fractalImg = 'data:image/png;base64,'+fBase64;
+                        clearInterval(interval);
                     }
                 })
             }, 3000);
