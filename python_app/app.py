@@ -135,9 +135,11 @@ if __name__ == "__main__":
     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
     print("\n\nElapsedtime: {} s\n\n".format(t1 - t0))
 
-    plt.imshow(fractal)
-    plt.show()
-    plt.savefig("fraktal.png")
+    fig = plt.imshow(fractal)
+    plt.axis('off')
+    fig.axes.get_xaxis().set_visible(False)
+    fig.axes.get_yaxis().set_visible(False)
+    plt.savefig("fraktal.png", bbox_inches='tight', pad_inches=0)
 
     with open("fraktal.png", "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read()).decode('ascii') #obraz do base64
