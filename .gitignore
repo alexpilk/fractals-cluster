@@ -1,4 +1,6 @@
 *~
+# folder 
+/frontend/vuejs-fractals-app/node-module/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
