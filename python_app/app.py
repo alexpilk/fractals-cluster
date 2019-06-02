@@ -7,17 +7,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import json
 import requests
-import urllib.request
 import base64
 from pyspark import SparkContext
 
-c = -0.73+0.19j
+c = -0.73 + 0.19j
 maxit = 0
+
 
 # p --griddla ktorego policzymy fraktal
 def julia_calculate(p):
     global c, maxit
-    #c = -0.73+0.19j #-0.10+0.65j
+    # c = -0.73+0.19j #-0.10+0.65j
     z = p
     divtime = maxit + np.zeros(z.shape, dtype=int)
 
@@ -47,28 +47,28 @@ def mandelbrot_calculate(p):
     return divtime
 
 
-#TO DO: sprawdzić czy to tak ma być
+# TO DO: sprawdzić czy to tak ma być
 def readJSON():
     print(type(sys.argv[1]))
     print(sys.argv[1])
     data = json.loads(sys.argv[1].replace('\'', '"'))
     # data = input("JSON ze strony w formacie({ \"name\": \"julia\", \"maxIt\":200, \"re\":-0.10, \"im\":0.65, \"h\":300, \"w\":300, \"p1\":-1.5, \"p2\":-1.5, \"k1\":1.5, \"k2\":1.5 }): ")
 
-    #with urllib.request.urlopen("jakis adres") as url:
+    # with urllib.request.urlopen("jakis adres") as url:
     #    data = json.loads(url.read().decode())
 
     return data
 
 
-#TO DO: sprawdzić czy to tak ma być
+# TO DO: sprawdzić czy to tak ma być
 def sendJSON(jsonData):
     myurl = "nasz url"
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     r = requests.post('http://35.238.239.157:8000/results/', data=jsonData, headers=headers)
 
-    #req = urllib.request.Request(myurl)
-    #req.add_header('Content-Type', 'application/json; charset=utf-8')
-    #response = urllib.request.urlopen(req, jsonData)
+    # req = urllib.request.Request(myurl)
+    # req.add_header('Content-Type', 'application/json; charset=utf-8')
+    # response = urllib.request.urlopen(req, jsonData)
 
 
 # name - nazwa fraktala, x,y- rozdzielczość, re,im - dla jakiej liczby zespolonej policzono fraktal, maxIt - maksymalna liczba iteracji, img - w formacie base64
@@ -77,7 +77,7 @@ def dataToJSON(name, x, y, liczbaZesp, maxIt, img, user):
         "name": name,
         "x": x,
         "y": y,
-        #"liczbaZespolona": liczbaZesp.__str__(),
+        # "liczbaZespolona": liczbaZesp.__str__(),
         "maxit": maxIt,
         "image": img,
         'user': user
@@ -87,27 +87,28 @@ def dataToJSON(name, x, y, liczbaZesp, maxIt, img, user):
 
     return jsonData
 
+
 if __name__ == "__main__":
 
-    #x = '{ "name": "julia", "maxIt":200, "re":-0.10, "im":0.65, "h":300, "w":300, "p1":-1.5, "p2":-1.5, "k1":1.5, "k2":1.5 }'
+    # x = '{ "name": "julia", "maxIt":200, "re":-0.10, "im":0.65, "h":300, "w":300, "p1":-1.5, "p2":-1.5, "k1":1.5, "k2":1.5 }'
 
     y = readJSON()
 
-                            # zmienne, które będą wczytywane z jsona
-    liczbaZesp = 0+0j
+    # zmienne, które będą wczytywane z jsona
+    liczbaZesp = 0 + 0j
     liczbaZesp += y["re"]
-    liczbaZesp += y["im"]*1j
-    fractalOption = y["name"]                   #"mandelbrot" / "julia"#
+    liczbaZesp += y["im"] * 1j
+    fractalOption = y["name"]  # "mandelbrot" / "julia"#
     user = y['user']
-    c = liczbaZesp                              #liczba zespolona
+    c = liczbaZesp  # liczba zespolona
     maxit = y["maxIt"]
-    h = y["h"]                                  #rozdzielczosc y
-    w = y["w"]                                  #rozdzielczosc x
-    p1 = y["p1"]                                #obszary generowania obrazu
+    h = y["h"]  # rozdzielczosc y
+    w = y["w"]  # rozdzielczosc x
+    p1 = y["p1"]  # obszary generowania obrazu
     p2 = y["p2"]
     k1 = y["k1"]
     k2 = y["k2"]
-                                                #dodatkowo ewentualnie jakieś kolory
+    # dodatkowo ewentualnie jakieś kolory
     ##########
 
     context = SparkContext("local", "first app")
@@ -117,14 +118,15 @@ if __name__ == "__main__":
 
     t0 = time.time()
 
-    grid_rdd = context.parallelize(grid, 2)             # stworzenie RDD z 2 partycjami
+    grid_rdd = context.parallelize(grid, 2)  # stworzenie RDD z 2 partycjami
 
     if fractalOption == "julia":
-        grid_rdd2 = grid_rdd.map(julia_calculate)       # stworzenie kolejnego RDD na podstawie istniejącego RDD, dla każdego elementu z grid_rdd wykonywana jest funkcja julia_calculate
+        grid_rdd2 = grid_rdd.map(
+            julia_calculate)  # stworzenie kolejnego RDD na podstawie istniejącego RDD, dla każdego elementu z grid_rdd wykonywana jest funkcja julia_calculate
     elif fractalOption == "mandelbrot":
         grid_rdd2 = grid_rdd.map(mandelbrot_calculate)
 
-    fractal = grid_rdd2.collect()                       # collect() --zbieramy wyniki do drivera
+    fractal = grid_rdd2.collect()  # collect() --zbieramy wyniki do drivera
 
     t1 = time.time()
 
@@ -138,7 +140,7 @@ if __name__ == "__main__":
     plt.savefig("fraktal.png")
 
     with open("fraktal.png", "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read()).decode('ascii') #obraz do base64
+        encoded_string = base64.b64encode(image_file.read()).decode('ascii')  # obraz do base64
 
         print("obraz po enkodzie:", encoded_string)
 
@@ -146,5 +148,5 @@ if __name__ == "__main__":
 
         print("Json do wysłania:", jsonToSend)
 
-                                        #wysłanie JSONA
+        # wysłanie JSONA
         sendJSON(jsonToSend)
