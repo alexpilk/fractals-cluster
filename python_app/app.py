@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
     t0 = time.time()
 
-    grid_rdd = context.parallelize(grid, 2)             # stworzenie RDD z 2 partycjami
+    grid_rdd = context.parallelize(grid)             # stworzenie RDD z 2 partycjami
 
     if fractalOption == "julia":
         grid_rdd2 = grid_rdd.map(julia_calculate)       # stworzenie kolejnego RDD na podstawie istniejącego RDD, dla każdego elementu z grid_rdd wykonywana jest funkcja julia_calculate
