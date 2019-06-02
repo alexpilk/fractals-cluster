@@ -6,6 +6,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import json
+import requests
 import urllib.request
 import base64
 from pyspark import SparkContext
@@ -48,8 +49,6 @@ def mandelbrot_calculate(p):
 
 #TO DO: sprawdzić czy to tak ma być
 def readJSON():
-    import json
-    import sys
     print(type(sys.argv[1]))
     print(sys.argv[1])
     data = json.loads(sys.argv[1].replace('\'', '"'))
@@ -63,7 +62,6 @@ def readJSON():
 
 #TO DO: sprawdzić czy to tak ma być
 def sendJSON(jsonData):
-    import requests
     myurl = "nasz url"
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     r = requests.post('http://35.238.239.157:8000/results/', data=jsonData, headers=headers)
