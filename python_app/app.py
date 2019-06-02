@@ -8,10 +8,11 @@ import matplotlib.pyplot as plt
 import json
 import urllib.request
 import base64
+import cmath
 from pyspark import SparkContext
 
 c = -0.73+0.19j
-maxit = 0
+maxit = 1
 
 # p --griddla ktorego policzymy fraktal
 def julia_calculate(p):
@@ -30,7 +31,7 @@ def julia_calculate(p):
     return divtime
 
 
-# p --griddla ktorego policzymy fraktal
+# p --grid dla ktorego policzymy fraktal
 def mandelbrot_calculate(p):
     global maxit
     z = p
@@ -45,20 +46,41 @@ def mandelbrot_calculate(p):
 
     return divtime
 
+#grid = x + y * 1j  # gridh x w punktow
+
+def burning_ship_calculate(p):
+    global maxit
+    z = p
+    z_real = p.real
+    z_imag = p.imag
+    divtime = maxit + np.zeros(z.shape, dtype=int)
+
+    for i in range(maxit):
+        real_temp = z_real*z_real - z_imag*z_imag + p.real
+        z_imag = abs(2*z_real*z_imag) + p.imag
+        z_real = abs(real_temp)
+        z = complex(z_real, z_imag)
+        diverge = z * np.conj(z) > 2 ** 2  # who is diverging
+        div_now = diverge & (divtime == maxit)  # who is diverging now
+        divtime[div_now] = i  # note when
+        z[diverge] = 2  # avoi ddiverg. too much
+
+    return divtime
+
 
 #TO DO: sprawdzić czy to tak ma być
 def readJSON():
     import json
     import sys
-    print(type(sys.argv[1]))
-    print(sys.argv[1])
-    data = json.loads(sys.argv[1].replace('\'', '"'))
+   # print(type(sys.argv[1]))
+   # print(sys.argv[1])
+    #data = json.loads(sys.argv[1].replace('\'', '"'))
     # data = input("JSON ze strony w formacie({ \"name\": \"julia\", \"maxIt\":200, \"re\":-0.10, \"im\":0.65, \"h\":300, \"w\":300, \"p1\":-1.5, \"p2\":-1.5, \"k1\":1.5, \"k2\":1.5 }): ")
 
     #with urllib.request.urlopen("jakis adres") as url:
     #    data = json.loads(url.read().decode())
 
-    return data
+    #return data
 
 
 #TO DO: sprawdzić czy to tak ma być
@@ -91,9 +113,9 @@ def dataToJSON(name, x, y, liczbaZesp, maxIt, img, user):
 
 if __name__ == "__main__":
 
-    #x = '{ "name": "julia", "maxIt":200, "re":-0.10, "im":0.65, "h":300, "w":300, "p1":-1.5, "p2":-1.5, "k1":1.5, "k2":1.5 }'
+    y = '{"name": "burningship", "maxIt":200, "re":-0.10, "im":0.65, "h":300, "w":300, "p1":-1.5, "p2":-1.5, "k1":1.5, "k2":1.5, "user": "eloszka" }'
 
-    y = readJSON()
+    #y = readJSON()
 
                             # zmienne, które będą wczytywane z jsona
     liczbaZesp = 0+0j
@@ -125,6 +147,8 @@ if __name__ == "__main__":
         grid_rdd2 = grid_rdd.map(julia_calculate)       # stworzenie kolejnego RDD na podstawie istniejącego RDD, dla każdego elementu z grid_rdd wykonywana jest funkcja julia_calculate
     elif fractalOption == "mandelbrot":
         grid_rdd2 = grid_rdd.map(mandelbrot_calculate)
+    elif fractalOption == "burningship":
+        grid_rdd2 = grid_rdd.map(burning_ship_calculate)
 
     fractal = grid_rdd2.collect()                       # collect() --zbieramy wyniki do drivera
 
