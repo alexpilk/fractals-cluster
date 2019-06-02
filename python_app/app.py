@@ -119,18 +119,18 @@ if __name__ == "__main__":
 
                             # zmienne, które będą wczytywane z jsona
     liczbaZesp = 0+0j
-    liczbaZesp += y["re"]
-    liczbaZesp += y["im"]*1j
-    fractalOption = y["name"]                   #"mandelbrot" / "julia"#
-    user = y['user']
+    liczbaZesp += -0.10
+    liczbaZesp += 0.65*1j
+    fractalOption = "burningship"                   #"mandelbrot" / "julia"#
+    user = "tomek"
     c = liczbaZesp                              #liczba zespolona
-    maxit = y["maxIt"]
-    h = y["h"]                                  #rozdzielczosc y
-    w = y["w"]                                  #rozdzielczosc x
-    p1 = y["p1"]                                #obszary generowania obrazu
-    p2 = y["p2"]
-    k1 = y["k1"]
-    k2 = y["k2"]
+    maxit = 200
+    h = 300                                 #rozdzielczosc y
+    w = 300                                  #rozdzielczosc x
+    p1 = -1.5                                #obszary generowania obrazu
+    p2 = -1.5
+    k1 = 1.5
+    k2 = 1.5
                                                 #dodatkowo ewentualnie jakieś kolory
     ##########
 
