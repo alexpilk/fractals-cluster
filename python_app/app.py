@@ -59,8 +59,7 @@ def burning_ship_calculate(p):
         real_temp = z_real*z_real - z_imag*z_imag + p.real
         z_imag = abs(2*z_real*z_imag) + p.imag
         z_real = abs(real_temp)
-        z = complex(z_real, z_imag)
-        diverge = z * np.conj(z) > 2 ** 2  # who is diverging
+        diverge = z_real*z_real + z_imag*z_imag > 2 ** 2  # who is diverging
         div_now = diverge & (divtime == maxit)  # who is diverging now
         divtime[div_now] = i  # note when
         z[diverge] = 2  # avoi ddiverg. too much
