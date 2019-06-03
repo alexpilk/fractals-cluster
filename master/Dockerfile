@@ -5,6 +5,8 @@ MAINTAINER Gezim Sejdiu <g.sejdiu@gmail.com>
 
 COPY master.sh /
 
+RUN apk add py-numpy
+
 ENV SPARK_MASTER_PORT 7077
 ENV SPARK_MASTER_WEBUI_PORT 8080
 ENV SPARK_MASTER_LOG /spark/logs
