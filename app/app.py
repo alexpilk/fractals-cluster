@@ -9,7 +9,8 @@ import json
 import urllib.request
 import base64
 import cmath
-from pyspark import SparkContext
+import os
+from pyspark import SparkContext, SparkConf
 
 c = -0.73+0.19j
 maxit = 1
@@ -123,9 +124,9 @@ if __name__ == "__main__":
     fractalOption = "burningship"                   #"mandelbrot" / "julia"#
     user = "tomek"
     c = liczbaZesp                              #liczba zespolona
-    maxit = 200
-    h = 300                                 #rozdzielczosc y
-    w = 300                                  #rozdzielczosc x
+    maxit = 1000
+    h = 1000                                 #rozdzielczosc y
+    w = 1000                                  #rozdzielczosc x
     p1 = -1.5                                #obszary generowania obrazu
     p2 = -1.5
     k1 = 1.5
@@ -133,7 +134,10 @@ if __name__ == "__main__":
                                                 #dodatkowo ewentualnie jakieś kolory
     ##########
 
-    context = SparkContext("local", "first app")
+    conf = SparkConf().setAppName("first app").setMaster("spark://"+os.environ['SPARK_MASTER_NAME']+":"+os.environ['SPARK_MASTER_PORT'])
+    #conf = SparkConf().setAppName("first app").setMaster("local[*]")
+    context = SparkContext(conf=conf)
+    #context = SparkContext("local", "first app")
 
     y, x = np.ogrid[p1:k1:h * 1j, p2:k2:w * 1j]
     grid = x + y * 1j  # gridh x w punktow
