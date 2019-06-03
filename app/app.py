@@ -133,8 +133,9 @@ if __name__ == "__main__":
     k2 = 1.5
                                                 #dodatkowo ewentualnie jakieś kolory
     ##########
-
-    conf = SparkConf().setAppName("first app").setMaster("spark://"+os.environ['SPARK_MASTER_NAME']+":"+os.environ['SPARK_MASTER_PORT'])
+    
+    conf = SparkConf().setAppName("first app").setMaster("spark://172.18.0.2:"+os.environ['SPARK_MASTER_PORT'])
+    #conf = SparkConf().setAppName("first app").setMaster("spark://"+os.environ['SPARK_MASTER_NAME']+":"+os.environ['SPARK_MASTER_PORT'])
     #conf = SparkConf().setAppName("first app").setMaster("local[*]")
     context = SparkContext(conf=conf)
     #context = SparkContext("local", "first app")
