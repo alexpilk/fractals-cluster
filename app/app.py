@@ -4,6 +4,8 @@
 import sys
 import time
 import numpy as np
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import json
 import urllib.request
@@ -124,9 +126,9 @@ if __name__ == "__main__":
     fractalOption = "burningship"                   #"mandelbrot" / "julia"#
     user = "tomek"
     c = liczbaZesp                              #liczba zespolona
-    maxit = 1000
-    h = 1000                                 #rozdzielczosc y
-    w = 1000                                  #rozdzielczosc x
+    maxit = 300
+    h = 400                                 #rozdzielczosc y
+    w = 400                                  #rozdzielczosc x
     p1 = -1.5                                #obszary generowania obrazu
     p2 = -1.5
     k1 = 1.5
