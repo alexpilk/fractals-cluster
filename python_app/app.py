@@ -49,6 +49,23 @@ def mandelbrot_calculate(p):
 
     return divtime
 
+def burning_ship_calculate(p):
+    global maxit
+    z = p
+    z_real = p.real
+    z_imag = p.imag
+    divtime = maxit + np.zeros(z.shape, dtype=int)
+
+    for i in range(maxit):
+        real_temp = z_real*z_real - z_imag*z_imag + p.real
+        z_imag = abs(2*z_real*z_imag) + p.imag
+        z_real = abs(real_temp)
+        diverge = z_real*z_real + z_imag*z_imag > 2 ** 2  # who is diverging
+        div_now = diverge & (divtime == maxit)  # who is diverging now
+        divtime[div_now] = i  # note when
+        z[diverge] = 2  # avoi ddiverg. too much
+
+    return divtime
 
 #TO DO: sprawdzić czy to tak ma być
 def readJSON():

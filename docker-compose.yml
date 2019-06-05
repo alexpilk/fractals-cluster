@@ -8,9 +8,12 @@ services:
       - "7077:7077"
     environment:
       - INIT_DAEMON_STEP=setup_spark
+
   spark-worker-1:
     image: bde2020/spark-worker:2.4.0-hadoop2.7
     container_name: spark-worker-1
+    cpu_quota: 50000
+    mem_limit: 1000000000
     depends_on:
       - spark-master
     ports:
@@ -21,6 +24,8 @@ services:
   spark-worker-2:
     image: bde2020/spark-worker:2.4.0-hadoop2.7
     container_name: spark-worker-2
+    cpu_quota: 50000
+    mem_limit: 500000000
     depends_on:
       - spark-master
     ports:
@@ -31,6 +36,8 @@ services:
   spark-worker-3:
     image: bde2020/spark-worker:2.4.0-hadoop2.7
     container_name: spark-worker-3
+    cpu_quota: 50000
+    mem_limit: 1000000000
     depends_on:
       - spark-master
     ports:
@@ -41,6 +48,8 @@ services:
   spark-worker-4:
     image: bde2020/spark-worker:2.4.0-hadoop2.7
     container_name: spark-worker-4
+    cpu_quota: 50000
+    mem_limit: 1000000000
     depends_on:
       - spark-master
     ports:
@@ -51,9 +60,11 @@ services:
   spark-worker-5:
     image: bde2020/spark-worker:2.4.0-hadoop2.7
     container_name: spark-worker-5
+    cpu_quota: 40000
+    mem_limit: 300m
     depends_on:
       - spark-master
     ports:
       - "8085:8081"
     environment:
-- "SPARK_MASTER=spark://spark-master:7077"
+      - "SPARK_MASTER=spark://spark-master:7077"
