@@ -8,9 +8,9 @@ services:
     environment:
       - ENABLE_INIT_DAEMON=false
     external_links:
-      - "spark-master:spark-master"
+      - spark-master
     networks:
-      - "spark_default"
+      - fractals-cluster_default
 networks:
-  spark_default:
+  fractals-cluster_default:
     external: true

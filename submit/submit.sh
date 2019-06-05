@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#export SPARK_MASTER_HOSTNAME=$(docker ps -aqf "name=spark-master")
 export SPARK_MASTER_URL=spark://${SPARK_MASTER_NAME}:${SPARK_MASTER_PORT}
 export SPARK_HOME=/spark
 
@@ -21,6 +22,7 @@ else
         echo "Passing arguments ${SPARK_APPLICATION_ARGS}"
         PYSPARK_PYTHON=python3 /spark/bin/spark-submit \
             --master ${SPARK_MASTER_URL} \
+            --deploy-mode cluster \
             ${SPARK_SUBMIT_ARGS} \
             ${SPARK_APPLICATION_PYTHON_LOCATION} ${SPARK_APPLICATION_ARGS}
     else

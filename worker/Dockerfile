@@ -5,8 +5,18 @@ MAINTAINER Gezim Sejdiu <g.sejdiu@gmail.com>
 
 COPY worker.sh /
 
+RUN apk add 'readline<8'
+RUN apk add --update python3 python3-dev libgfortran \
+			build-base libstdc++ \
+            libpng libpng-dev \
+            freetype freetype-dev
+
+RUN pip3 install --upgrade pip
+RUN pip3 install numpy
+
 ENV SPARK_WORKER_WEBUI_PORT 8081
 ENV SPARK_WORKER_LOG /spark/logs
+ENV SPARK_MASTER_HOSTNAME "spark-master"
 ENV SPARK_MASTER "spark://spark-master:7077"
 
 EXPOSE 8081

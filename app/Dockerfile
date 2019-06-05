@@ -6,19 +6,20 @@ COPY template.sh /
 COPY requirements.txt /app/
 
 RUN apk add 'readline<8' 
-RUN apk add --update --no-cache	python3 python3-dev libgfortran \ 
+RUN apk add --update python3 python3-dev libgfortran \
 				build-base libstdc++ \
-                                libpng libpng-dev \
-                                freetype freetype-dev 
+                libpng libpng-dev \
+                freetype freetype-dev
                                 
 RUN pip3 install --upgrade pip
 RUN cd /app \
-      && pip3 install -r requirements.txt --no-cache-dir
-
+      && pip3 install -r requirements.txt
 # Copy the source code
 COPY app.py /app/app.py
 RUN pip3 install requests
 ARG args
+ENV SPARK_MASTER_NAME spark-master
+ENV SPARK_MASTER_PORT 7077
 ENV SPARK_APPLICATION_PYTHON_LOCATION /app/app.py
 ENV SPARK_APPLICATION_ARGS ${args}
 
