@@ -1,14 +1,18 @@
 #
-# Mandelbrotfractal--on Spark
+# Fractal--on Spark
 #
 import sys
 import time
 import numpy as np
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import json
 import urllib.request
 import base64
-from pyspark import SparkContext
+import cmath
+import os
+from pyspark import SparkContext, SparkConf
 
 c = -0.73+0.19j
 maxit = 0
@@ -112,19 +116,22 @@ if __name__ == "__main__":
                                                 #dodatkowo ewentualnie jakieś kolory
     ##########
 
-    context = SparkContext("local", "first app")
+    conf = SparkConf().setAppName("first app").setMaster("spark://172.18.0.2:"+os.environ['SPARK_MASTER_PORT'])
+    context = SparkContext(conf=conf)
 
     y, x = np.ogrid[p1:k1:h * 1j, p2:k2:w * 1j]
     grid = x + y * 1j  # gridh x w punktow
 
     t0 = time.time()
 
-    grid_rdd = context.parallelize(grid, 2)             # stworzenie RDD z 2 partycjami
+    grid_rdd = context.parallelize(grid)                # stworzenie RDD ze wszystkimi możliwimy partycjami
 
     if fractalOption == "julia":
         grid_rdd2 = grid_rdd.map(julia_calculate)       # stworzenie kolejnego RDD na podstawie istniejącego RDD, dla każdego elementu z grid_rdd wykonywana jest funkcja julia_calculate
     elif fractalOption == "mandelbrot":
         grid_rdd2 = grid_rdd.map(mandelbrot_calculate)
+    elif fractalOption == "burningship":
+        grid_rdd2 = grid_rdd.map(burning_ship_calculate)
 
     fractal = grid_rdd2.collect()                       # collect() --zbieramy wyniki do drivera
 
@@ -142,7 +149,7 @@ if __name__ == "__main__":
     with open("fraktal.png", "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read()).decode('ascii') #obraz do base64
 
-        print("obraz po enkodzie:", encoded_string)
+        #print("obraz po enkodzie:", encoded_string)
 
         jsonToSend = dataToJSON(fractalOption, w, h, liczbaZesp, maxit, encoded_string, user)
 
