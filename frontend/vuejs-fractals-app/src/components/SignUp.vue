@@ -43,7 +43,7 @@ export default {
     },
      methods: {
         register: function(){
-            const REGISTER_PAGE_URL = 'http://35.238.239.157:8000/signup/';
+            const REGISTER_PAGE_URL = 'http://0.0.0.0:8000/signup/';
             const formData = new FormData();
             formData.append('username', this.user.username);
             formData.append('password1', this.user.password);

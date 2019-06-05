@@ -51,7 +51,7 @@ export default {
 
     methods: {
       login: function(){
-        const LOGIN_PAGE_URL = 'http://35.238.239.157:8000/login/'
+        const LOGIN_PAGE_URL = 'http://0.0.0.0:8000/login/'
         const formData = new FormData();
         formData.append('username', this.user.username);
         formData.append('password', this.user.password);

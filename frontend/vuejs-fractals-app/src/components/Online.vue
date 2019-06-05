@@ -93,7 +93,7 @@ export default {
     methods: {
         sendFractal: function(){
         this.fractal.user = localStorage.username;
-        const BASE_URL = 'http://35.238.239.157:8000/fractal/';
+        const BASE_URL = 'http://0.0.0.0:8000/fractal/';
 
             this.$http.post(BASE_URL, this.fractal
             ).then(function(data){
@@ -102,10 +102,10 @@ export default {
         },
 
         getFractal: function(){
-            const RE_URL = 'http://35.238.239.157:8000/preview64/?';
+            const RE_URL = 'http://0.0.0.0:8000/preview64/?';
             var self = this;
             let interval = setInterval(function() {
-                self.$http.get('http://35.238.239.157:8000/preview64/?user='+self.fractal.user).then(function(response) {
+                self.$http.get('http://0.0.0.0:8000/preview64/?user='+self.fractal.user).then(function(response) {
                    if(response.status == "200") {
                         let fBase64 = response.bodyText;
                         self.fractalImg = 'data:image/png;base64,'+fBase64;
