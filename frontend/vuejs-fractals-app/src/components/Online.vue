@@ -106,7 +106,7 @@ export default {
             var self = this;
             let interval = setInterval(function() {
                 self.$http.get('http://35.238.239.157:8000/preview64/?user='+self.fractal.user).then(function(response) {
-                   if(response.status == "200") {
+                   if(response.status == "200" || localStorage.username1 == undefined) {
                         let fBase64 = response.bodyText;
                         self.fractalImg = 'data:image/png;base64,'+fBase64;
                         clearInterval(interval);
@@ -115,7 +115,17 @@ export default {
             }, 3000);
         }
     },
-   
+   created() {
+            this.fractal.user = localStorage.username;
+           const RE_URL = 'http://35.238.239.157:8000/preview64/?';
+                this.$http.get('http://35.238.239.157:8000/preview64/?user='+this.fractal.user).then(function(response) {
+                   if(response.status == "200") {
+                        let fBase64 = response.bodyText;
+                        this.fractalImg = 'data:image/png;base64,'+fBase64;
+                    }
+                })
+       
+   }
 }
 </script>
 <style scoped>
