@@ -87,7 +87,7 @@ def sendJSON(jsonData):
     import requests
     myurl = "nasz url"
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    r = requests.post('http://35.238.239.157:8000/results/', data=jsonData, headers=headers)
+    r = requests.post('http://0.0.0.0:8000/results/', data=jsonData, headers=headers)
 
     #req = urllib.request.Request(myurl)
     #req.add_header('Content-Type', 'application/json; charset=utf-8')
