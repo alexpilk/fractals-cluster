@@ -14,7 +14,7 @@
     "base64-img": "^1.0.4",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "vue": "^2.5.11",
     "vue-cookies": "^1.5.13",
     "vue-csrf": "^1.1.0",
